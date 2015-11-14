@@ -20,15 +20,18 @@ from ..common.util import abort_if_resource_doesnt_exist, make_json_response, ch
 from .fields.testcase_field import testCase_resp_fields
 from .reauest_parser.testcase import batchCreateRootParser, batchUpdateRootParser, paging_get_args, patch_update_parser
 from sqlalchemy.exc import IntegrityError
+from .auth.http_auth import auth
 
 
 class TestCaseResource(Resource):
+
     def get(self, id):
         abort_if_resource_doesnt_exist(TestCase, id)
         testCaseDict = OrderedDict()
         testCaseDict['TestCase' + str(id)] = TestCase.query.get(id).serialize
-        return make_json_response(api, testCaseDict, 200)
+        return make_json_response(api, {"testcase": testCaseDict, 'success': True}, 200)
 
+    @auth.login_required
     def delete(self, id):
         abort_if_resource_doesnt_exist(TestCase, id)
         testCase = TestCase.query.get(id)
@@ -40,6 +43,7 @@ class TestCaseResource(Resource):
             db.session.rollback()
             return make_json_response(api, {'error': {'code': 101, 'message': e.message}, 'success': False}, 500)
 
+    @auth.login_required
     @marshal_with(testCase_resp_fields)
     def patch(self, id):
         abort_if_resource_doesnt_exist(TestCase, id)
@@ -56,6 +60,7 @@ class TestCaseResource(Resource):
 
 
 class TestCaseCollectionsResource(Resource):
+
     def get(self):
         """
         batch read
@@ -63,8 +68,10 @@ class TestCaseCollectionsResource(Resource):
         """
         args = paging_get_args.parse_args()
         testCaseJsonObjectList = []
-        page = args['page']
-        limit = args['limit']
+        req_page = args['page']
+        req_limit = args['limit']
+        page = req_page if req_page else 1
+        limit = req_limit if req_limit else 25
         testCasePaginate = TestCase.query.paginate(page, limit, False)
         testCaseObjectList = testCasePaginate.items
         total = testCasePaginate.total
@@ -88,6 +95,7 @@ class TestCaseCollectionsResource(Resource):
         else:
             abort(404, message="No any Todo's in here.")
 
+    @auth.login_required
     def post(self):
         """
         batch create
@@ -125,6 +133,7 @@ class TestCaseCollectionsResource(Resource):
                                           400)
         return make_json_response(api, {"testcases": returnTestCaseList, "success": True}, 201)
 
+    @auth.login_required
     def put(self):
         """
         batch update
@@ -155,4 +164,6 @@ class TestCaseCollectionsResource(Resource):
                 errorMessage = "invalid request parameters"
                 return make_json_response(api, {'success': False, 'error': {'code': 1001, 'message': errorMessage}},
                                           400)
-        return make_json_response(api, {"updateTime": str(datetime.now().strftime('%Y-%m-%d %H:%M:%S')), "success": True}, 204)
+        return make_json_response(api,
+                                  {"updateTime": str(datetime.now().strftime('%Y-%m-%d %H:%M:%S')), "success": True},
+                                  204)

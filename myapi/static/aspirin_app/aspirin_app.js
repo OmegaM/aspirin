@@ -10,6 +10,8 @@
 
 Ext.onReady(function () {
 
+    Ext.tip.QuickTipManager.init();
+
     Ext.require([
         'Ext.TabPanel',
         'Ext.Viewport',

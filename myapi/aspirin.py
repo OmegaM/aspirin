@@ -21,7 +21,7 @@ app = Flask(__name__)
 app.config.update(
     DEBUG=True,
     SQLALCHEMY_DATABASE_URI='mysql://root:@localhost/aspirin_db',
-    SQLALCHEMY_ECHO=True
+    SQLALCHEMY_ECHO=False
 )
 
 api = Api(app)

@@ -20,6 +20,8 @@ def abort_if_resource_doesnt_exist(resource_model, res_id):
 
 
 def make_json_response(api, data, code):
+    if not data:
+        data = {}
     resp = api.make_response(data=data, code=code)
     resp.headers['Content-Type'] = 'application/json;charset=utf-8'
     return resp
@@ -34,4 +36,5 @@ def check_if_string_not_blank(original_dict, exclude_key):
             flag = original_dict[key].strip() != ''
             if not flag:
                 break
-    return flag
+    else:
+        return flag

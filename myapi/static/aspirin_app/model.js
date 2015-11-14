@@ -32,5 +32,13 @@ Ext.define('TestStepModel', {
         {name: 'testExpectValue', type: 'string'},
         {name: 'officalData', type: 'string'},
         {name: 'officalExpectValue', type: 'string'}
+    ],
+    validations: [
+        {
+            field: 'step',
+            type: 'length', min: 0, max: 999, message: '必须为数字!'
+        }
     ]
+
+
 });

@@ -49,7 +49,8 @@ var testStepStore = Ext.create('Ext.data.Store', {
             type: 'json',
             root: 'teststeps',
             idProperty: 'id',
-            totalProperty: 'total'
+            totalProperty: 'total',
+            successProperty: 'success'
         }
 
     },
@@ -62,6 +63,32 @@ var platformLocalStore = Ext.create('Ext.data.Store', {
         {"id": "WEB", "name": "WEB"},
         {"id": "ANDROID", "name": "ANDROID"},
         {"id": "IOS", "name": "IOS"}
+    ]
+});
+
+var byTypeLocalStore = Ext.create('Ext.data.Store', {
+    fields: ['id', 'name'],
+    data: [
+        {"id": "LinkText", "name": "LinkText"},
+        {"id": "Xpath", "name": "Xpath"},
+        {"id": "Id", "name": "Id"},
+        {"id": "Name", "name": "Name"}
+    ]
+});
+
+var actionKeywordLocalStore = Ext.create('Ext.data.Store', {
+    fields: ['id', 'name'],
+    data: [
+        {"id": "Click", "name": "Click"},
+        {"id": "Read", "name": "Read"},
+        {"id": "Input", "name": "Input"},
+        {"id": "Navigate", "name": "Navigate"},
+        {"id": "OpenSession", "name": "OpenSession"},
+        {"id": "CloseSession", "name": "CloseSession"},
+        {"id": "WaitFor", "name": "WaitFor"},
+        {"id": "Refresh", "name": "Refresh"},
+        {"id": "ExecuteJs", "name": "ExecuteJs"},
+        {"id": "Assert", "name": "Assert"}
     ]
 });
 

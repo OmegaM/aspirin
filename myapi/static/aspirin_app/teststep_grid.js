@@ -56,14 +56,18 @@
                 header: 'PageObjectName', dataIndex: 'pageObjectName',
                 editor: {
                     xtype: 'textfield',
-                    allowBlank: false
+                    allowBlank: false,
+                    regex: /[^\u4e00-\u9fa5]+$/,
+                    regexText: '不允许输入中文!'
                 }
             },
             {
                 header: 'Step', dataIndex: 'step',
                 editor: {
                     xtype: 'textfield',
-                    allowBlank: false
+                    allowBlank: false,
+                    regex: /^(\d){1,3}$/,
+                    regexText: '必须是1~999的整数!'
                 }
             },
             {
@@ -75,9 +79,20 @@
             },
             {
                 header: 'ByType', dataIndex: 'byType',
-                editor: {
-                    xtype: 'textfield',
-                    allowBlank: false
+                field: {
+                    xtype: 'combobox',
+                    id: 'bytype',
+                    triggerAction: 'all',
+                    queryMode: 'local',
+                    selectOnTab: true,
+                    store: byTypeLocalStore,
+                    displayField: 'name',
+                    valueField: 'id',
+                    allowBlank: false,
+                    typeAhead: false,
+                    editable: false,
+                    emptyText: '请选择',
+                    listClass: 'x-combo-list-small'
                 }
             },
             {
@@ -89,9 +104,20 @@
             },
             {
                 header: 'Action', dataIndex: 'actionKeyword',
-                editor: {
-                    xtype: 'textfield',
-                    allowBlank: false
+                field: {
+                    xtype: 'combobox',
+                    id: 'action',
+                    triggerAction: 'all',
+                    queryMode: 'local',
+                    selectOnTab: true,
+                    store: actionKeywordLocalStore,
+                    displayField: 'name',
+                    valueField: 'id',
+                    allowBlank: false,
+                    typeAhead: false,
+                    editable: false,
+                    emptyText: '请选择',
+                    listClass: 'x-combo-list-small'
                 }
             },
             {
@@ -196,7 +222,10 @@
             text: 'Save',
             handler: function () {
                 var apiUrl = '/aspirin/api/v1.0/teststeps';
-                var headers = {'Content-Type': 'application/json;charset=utf-8'};
+                var headers = {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Authorization': 'Basic YXNwaXJpbjp5b3V3aWxsbmV2ZXJndWVzcw=='
+                };
                 var batchUpdateJsonArray = [];
                 var batchCreateJsonArray = [];
                 //todoStore.getModifiedRecords().slice(0)获得修改的行
@@ -272,7 +301,7 @@
                     Ext.Ajax.request({
                         url: apiUrl,
                         method: 'PUT',
-                        headers: {'Content-Type': 'application/json;charset=utf-8'},
+                        headers: headers,
                         jsonData: {
                             'batchUpdateTestStepArray': batchUpdateJsonArray
                         },

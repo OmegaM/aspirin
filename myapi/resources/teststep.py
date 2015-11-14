@@ -19,6 +19,7 @@ from ..aspirin import api, db
 from ..common.util import abort_if_resource_doesnt_exist, make_json_response, check_if_string_not_blank
 from .fields.teststep_field import testStep_resp_fields
 from .reauest_parser.teststep import batchCreateRootParser, batchUpdateRootParser, patch_update_parser, paging_get_args
+from .auth.http_auth import auth
 
 
 class TestStepResource(Resource):
@@ -26,8 +27,9 @@ class TestStepResource(Resource):
         abort_if_resource_doesnt_exist(TestStep, id)
         testStepDict = OrderedDict()
         testStepDict['TestStep' + str(id)] = TestStep.query.get(id).serialize
-        return make_json_response(api, testStepDict, 200)
+        return make_json_response(api, {"teststep": testStepDict, 'success': True}, 200)
 
+    @auth.login_required
     def delete(self, id):
         abort_if_resource_doesnt_exist(TestStep, id)
         testStep = TestStep.query.get(id)
@@ -39,6 +41,7 @@ class TestStepResource(Resource):
             db.session.rollback()
             return make_json_response(api, {'error': {'code': 101, 'message': e.message}, 'success': False}, 500)
 
+    @auth.login_required
     @marshal_with(testStep_resp_fields)
     def patch(self, id):
         abort_if_resource_doesnt_exist(TestStep, id)
@@ -62,8 +65,10 @@ class TestStepCollectionsResource(Resource):
         """
         args = paging_get_args.parse_args()
         testStepJsonObjectList = []
-        page = args['page']
-        limit = args['limit']
+        req_page = args['page']
+        reg_limit = args['limit']
+        page = req_page if req_page else 1
+        limit = reg_limit if reg_limit else 25
         testStepPaginate = TestStep.query.paginate(page, limit, False)
         testStepObjectList = testStepPaginate.items
         total = testStepPaginate.total
@@ -77,6 +82,7 @@ class TestStepCollectionsResource(Resource):
                                       {'error': {'code': 404, 'message': '无TestStep显示'}, 'success': False},
                                       404)
 
+    @auth.login_required
     def post(self):
         """
         batch create
@@ -119,6 +125,7 @@ class TestStepCollectionsResource(Resource):
                                           400)
         return make_json_response(api, {"testSteps": returnTestStepList, "success": True}, 201)
 
+    @auth.login_required
     def put(self):
         """
         batch update
