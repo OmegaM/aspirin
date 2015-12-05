@@ -11,16 +11,18 @@
 """
 
 import json
-from datetime import datetime
-from flask_restful import Resource, abort, marshal_with
 from collections import OrderedDict
-from ..models.models import TestCase
-from ..aspirin import api, db
-from ..common.util import abort_if_resource_doesnt_exist, make_json_response, check_if_string_not_blank
+from datetime import datetime
+
+from flask_restful import Resource, abort, marshal_with
+from sqlalchemy.exc import IntegrityError
+
+from .auth.http_auth import auth
 from .fields.testcase_field import testCase_resp_fields
 from .reauest_parser.testcase import batchCreateRootParser, batchUpdateRootParser, paging_get_args, patch_update_parser
-from sqlalchemy.exc import IntegrityError
-from .auth.http_auth import auth
+from ..aspirin import api, db
+from ..common.util import abort_if_resource_doesnt_exist, make_json_response, check_if_string_not_blank, check_resource_exists
+from ..models.models import TestCase
 
 
 class TestCaseResource(Resource):
@@ -32,8 +34,9 @@ class TestCaseResource(Resource):
         return make_json_response(api, {"testcase": testCaseDict, 'success': True}, 200)
 
     @auth.login_required
+    @check_resource_exists(model=TestCase)
     def delete(self, id):
-        abort_if_resource_doesnt_exist(TestCase, id)
+        # abort_if_resource_doesnt_exist(TestCase, id)
         testCase = TestCase.query.get(id)
         try:
             db.session.delete(testCase)
@@ -44,9 +47,9 @@ class TestCaseResource(Resource):
             return make_json_response(api, {'error': {'code': 101, 'message': e.message}, 'success': False}, 500)
 
     @auth.login_required
+    @check_resource_exists(model=TestCase)
     @marshal_with(testCase_resp_fields)
-    def patch(self, id):
-        abort_if_resource_doesnt_exist(TestCase, id)
+    def put(self, id):
         args = patch_update_parser.parse_args()
         caseDescription = args['caseDescription']
         projectId = args['projectId']

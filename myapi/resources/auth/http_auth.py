@@ -10,8 +10,8 @@
     http_auth.py
 """
 
-
 from flask.ext.httpauth import HTTPBasicAuth
+
 from ...aspirin import api
 from ...common.util import make_json_response
 
@@ -27,4 +27,4 @@ def get_password(username):
 
 @auth.error_handler
 def unauthorized():
-    return make_json_response(api, {'error': {'message': 'Unauthorized access'}}, 403)
+    return make_json_response(api, {'error': {'message': 'Unauthorized Access'}}, 403)

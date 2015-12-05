@@ -11,27 +11,29 @@
 """
 
 import json
-from datetime import datetime
-from flask_restful import Resource, reqparse, marshal_with
 from collections import OrderedDict
-from ..models.models import TestCase, TestStep
-from ..aspirin import api, db
-from ..common.util import abort_if_resource_doesnt_exist, make_json_response, check_if_string_not_blank
+from datetime import datetime
+
+from flask_restful import Resource, marshal_with
+
+from .auth.http_auth import auth
 from .fields.teststep_field import testStep_resp_fields
 from .reauest_parser.teststep import batchCreateRootParser, batchUpdateRootParser, patch_update_parser, paging_get_args
-from .auth.http_auth import auth
+from ..aspirin import api, db
+from ..common.util import check_resource_exists, make_json_response, check_if_string_not_blank
+from ..models.models import TestStep
 
 
 class TestStepResource(Resource):
+    @check_resource_exists(model=TestStep)
     def get(self, id):
-        abort_if_resource_doesnt_exist(TestStep, id)
         testStepDict = OrderedDict()
         testStepDict['TestStep' + str(id)] = TestStep.query.get(id).serialize
         return make_json_response(api, {"teststep": testStepDict, 'success': True}, 200)
 
     @auth.login_required
+    @check_resource_exists(model=TestStep)
     def delete(self, id):
-        abort_if_resource_doesnt_exist(TestStep, id)
         testStep = TestStep.query.get(id)
         try:
             db.session.delete(testStep)
@@ -42,9 +44,9 @@ class TestStepResource(Resource):
             return make_json_response(api, {'error': {'code': 101, 'message': e.message}, 'success': False}, 500)
 
     @auth.login_required
+    @check_resource_exists(model=TestStep)
     @marshal_with(testStep_resp_fields)
     def patch(self, id):
-        abort_if_resource_doesnt_exist(TestStep, id)
         args = patch_update_parser.parse_args()
         caseDescription = args['caseDescription']
         projectId = args['projectId']

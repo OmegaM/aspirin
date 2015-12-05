@@ -120,6 +120,7 @@ var testCaseGrid = new Ext.grid.Panel({
                             Ext.Ajax.request({
                                 url: '/aspirin/api/v1.0/testcases/' + deleteTestCaseObject.id,
                                 method: 'DELETE',
+                                headers: getAuthHeaders(),
                                 success: function () {
                                     Ext.Msg.alert("提示", "成功删除");
                                     testCaseStore.reload();

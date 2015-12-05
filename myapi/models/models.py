@@ -10,9 +10,9 @@
     models.py
 """
 
-
-from datetime import datetime
 from collections import OrderedDict
+from datetime import datetime
+
 import model_enums
 from ..aspirin import db
 
@@ -30,10 +30,13 @@ class TestCase(db.Model):
     platform = db.Column(db.Enum(*PlatForm), nullable=False, default='WEB')
     runMode = db.Column(db.Boolean, default=None)
     testSet = db.Column(db.String(30), nullable=True, default=None)
-    createTime = db.Column(db.DateTime, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    updateTime = db.Column(db.DateTime, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    createTime = db.Column(
+        db.DateTime, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    updateTime = db.Column(
+        db.DateTime, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
-    teststeps = db.relationship('TestStep', backref='testcase', lazy='select')  # 使用subquery立即加载外键记录
+    teststeps = db.relationship(
+        'TestStep', backref='testcase', lazy='select')  # 使用subquery立即加载外键记录
 
     def __repr__(self):
         return "<TestCase  %r %r %r %r>" % (self.id, self.testCaseId, self.caseDescription, self.platform)
@@ -78,12 +81,16 @@ class TestStep(db.Model):
     officalData = db.Column(db.String(255), nullable=True)
     officalExpectValue = db.Column(db.String(255), nullable=True)
     parentId = db.Column(db.Integer, nullable=True, unique=False, default=None)
-    parentDesc = db.Column(db.String(30), nullable=True, unique=False, default=None)
+    parentDesc = db.Column(
+        db.String(30), nullable=True, unique=False, default=None)
     childId = db.Column(db.Integer, nullable=True, unique=False, default=None)
-    childDesc = db.Column(db.String(30), nullable=True, unique=False, default=None)
+    childDesc = db.Column(
+        db.String(30), nullable=True, unique=False, default=None)
     dataRow = db.Column(db.Integer, nullable=True, unique=False, default=None)
-    createTime = db.Column(db.DateTime, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    updateTime = db.Column(db.DateTime, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    createTime = db.Column(
+        db.DateTime, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    updateTime = db.Column(
+        db.DateTime, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
     def __repr__(self):
         return "<TestStep  %r %r %r>" % (self.id, self.testCaseId, self.stepDescription)
